@@ -17,7 +17,9 @@ class GANNetwork:
 
         self.discriminator = self.build_discriminator()
         self.discriminator.compile(
-            optimizer=self.optimizer, loss='binary_crossentropy', metrics=['accuracy']
+            optimizer=self.optimizer,
+            loss='binary_crossentropy',
+            metrics=['accuracy']
         )
 
         self.generator = self.build_generator()
@@ -32,7 +34,10 @@ class GANNetwork:
         validity = self.discriminator(generated_image)
 
         self.combined = keras.Model(z, validity)
-        self.combined.compile(optimizer=self.optimizer, loss='binary_crossentropy')
+        self.combined.compile(
+            optimizer=self.optimizer,
+            loss='binary_crossentropy'
+        )
 
     def build_generator(self):
         model = keras.models.Sequential()
@@ -67,7 +72,9 @@ class GANNetwork:
         )
 
         model.add(
-            keras.layers.Dense(units=np.prod(self.image_shape), activation='tanh')
+            keras.layers.Dense(
+                units=np.prod(self.image_shape), activation='tanh'
+            )
         )
         model.add(
             keras.layers.Reshape(target_shape=self.image_shape)
@@ -121,8 +128,12 @@ class GANNetwork:
             noise = np.random.normal(0, 1, (half_batch_size, 100))
             generated_images = self.generator.predict(noise)
 
-            d_loss_real = self.discriminator.train_on_batch(images, np.ones((half_batch_size, 1)))
-            d_loss_fake = self.discriminator.train_on_batch(generated_images, np.zeros((half_batch_size, 1)))
+            d_loss_real = self.discriminator.train_on_batch(
+                images, np.ones((half_batch_size, 1))
+            )
+            d_loss_fake = self.discriminator.train_on_batch(
+                generated_images, np.zeros((half_batch_size, 1))
+            )
 
             d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
 
@@ -130,8 +141,11 @@ class GANNetwork:
             validity = np.ones((batch_size, 1))
             g_loss = self.combined.train_on_batch(noise, validity)
 
-
-            print('{:>8d}\t[D loss: {:.4f}, acc: {:.2%}]\t[G loss: {:.4f}]'.format(epoch, d_loss[0], d_loss[1], g_loss))
+            print(
+                f'{epoch:8}\t',
+                f'[D loss: {d_loss[0]:.4f}, acc: {d_loss[1]:.2%}]\t',
+                f'[G loss: {g_loss:.4f}]'
+            )
 
             if epoch % save_interval == 0:
                 self.save_images(epoch)

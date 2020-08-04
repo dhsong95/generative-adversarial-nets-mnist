@@ -128,8 +128,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# OSX
+.DS_Store
+
 # Visual Studio Code
 .vscode/
 
 # Image Directory
-images/
+images/mnist_*.png
